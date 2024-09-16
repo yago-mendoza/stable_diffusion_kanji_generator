@@ -1,6 +1,6 @@
 import gzip
 from pathlib import Path
-from config import log
+from utils.logger import log
 
 def decompress_file(compressed_path, decompressed_path):
     try:

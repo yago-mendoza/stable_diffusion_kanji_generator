@@ -15,4 +15,4 @@ def get_logger(name=None):
 
 # Set up logging when the module is imported
 setup_logging()
-log = get_logger('my_logger')
+log = get_logger('Data preprocessing')

@@ -2,7 +2,7 @@ import json
 import os
 from PIL import Image
 import numpy as np
-from config import log
+from utils.logger import log
 
 def build_dataset(definitions_file, images_dir, output_file):
     log.info("Starting dataset build process...")
@@ -40,10 +40,10 @@ def build_dataset(definitions_file, images_dir, output_file):
         log.error(f"Failed to build dataset: {e}")
 
 def main():
-    definitions_file = 'data/processed/definitions/kanjidic_processed.json'
-    images_dir = 'data/processed/images'
     output_file = 'data/dataset/kanji_dataset.json'
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    definitions_file = 'data/processed/definitions/kanjidic_processed.json'
+    images_dir = 'data/processed/images'
     build_dataset(definitions_file, images_dir, output_file)
 
 if __name__ == "__main__":

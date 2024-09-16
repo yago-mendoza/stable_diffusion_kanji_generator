@@ -1,16 +1,11 @@
-"""
-This script runs a series of preprocessing steps, including:
-1. Decompressing data                    (scripts/decompress_data.py)
-2. Processing KANJIDIC2 data             (src/data_processing/kanjidic_parser.py)
-3. Converting SVG files to pixel images  (src/data_processing/svg_to_pixel.py)
-4. Building the dataset                  (src/data_processing/dataset_builder.py)
-"""
-
 import os
 import subprocess
-from config import log
+from utils.logger import log
 
 def run_script(script_path):
+    """
+    Run a Python script from the current directory.
+    """
     full_path = os.path.join(os.path.dirname(__file__), script_path)
     try:
         subprocess.run(['python', full_path], check=True)
@@ -19,21 +14,16 @@ def run_script(script_path):
         log.error(f"Failed to run script {script_path}: {e}")
 
 def main():
-    # Step 1: Decompress the data
-    log.info("Decompressing data...")
-    run_script('decompress_data.py')
+    scripts = [
+        'decompress_data.py',  # Decompress the data
+        'kanjidic_parser.py',  # Parse the KANJIDIC2 data
+        'svg_to_pixel.py',     # Convert SVG files to pixel images
+        'dataset_builder.py'  # Build the dataset
+    ]
 
-    # Step 2: Process the KANJIDIC2 data
-    log.info("Processing KANJIDIC2...")
-    run_script('../src/data_processing/kanjidic_parser.py')
-
-    # Step 3: Convert SVG files to pixel images
-    log.info("Converting SVG to pixel images...")
-    run_script('../src/data_processing/svg_to_pixel.py')
-
-    # Step 4: Build the dataset
-    log.info("Building the dataset...")
-    run_script('../src/data_processing/dataset_builder.py')
+    for script in scripts:
+        log.info(f"Running {script}...")
+        run_script(f'../src/data_preprocessing/{script}')
 
     log.info("Preprocessing complete.")
 
