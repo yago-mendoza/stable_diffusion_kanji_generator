@@ -2,7 +2,7 @@ import json
 import os
 from PIL import Image
 import numpy as np
-from utils.logger import log
+from src.utils.logger import log
 
 def build_dataset(definitions_file, images_dir, output_file):
     log.info("Starting dataset build process...")

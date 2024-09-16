@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 import json
 import io
 from PIL import Image
-from utils.logger import log
+from src.utils.logger import log
 from pathlib import Path
 import cairosvg
 

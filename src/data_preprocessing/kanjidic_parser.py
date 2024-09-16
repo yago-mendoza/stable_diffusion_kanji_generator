@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 import json
 import os
-from utils.logger import log
+from src.utils.logger import log
 
 def extract_kanji_data(root: ET.Element) -> dict:
     # Extracts <literal> and <meaning> elements from the XML file

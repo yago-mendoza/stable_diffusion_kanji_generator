@@ -1,29 +1,29 @@
-import os
-import subprocess
-from utils.logger import log
+import sys
+from pathlib import Path
 
-def run_script(script_path):
-    """
-    Run a Python script from the current directory.
-    """
-    full_path = os.path.join(os.path.dirname(__file__), script_path)
-    try:
-        subprocess.run(['python', full_path], check=True)
-        log.info(f"Successfully ran script: {script_path}")
-    except subprocess.CalledProcessError as e:
-        log.error(f"Failed to run script {script_path}: {e}")
+# Add the project root to the Python path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from src.utils.logger import log
+from src.data_preprocessing import decompress_data, kanjidic_parser, svg_to_pixel, dataset_builder
 
 def main():
-    scripts = [
-        'decompress_data.py',  # Decompress the data
-        'kanjidic_parser.py',  # Parse the KANJIDIC2 data
-        'svg_to_pixel.py',     # Convert SVG files to pixel images
-        'dataset_builder.py'  # Build the dataset
+    steps = [
+        ("Decompressing data", decompress_data.main),
+        ("Parsing KANJIDIC2 data", kanjidic_parser.main),
+        ("Converting SVG to pixel images", svg_to_pixel.main),
+        ("Building the dataset", dataset_builder.main)
     ]
 
-    for script in scripts:
-        log.info(f"Running {script}...")
-        run_script(f'../src/data_preprocessing/{script}')
+    for step_name, step_function in steps:
+        log.info(f"Starting: {step_name}")
+        try:
+            step_function()
+            log.info(f"Completed: {step_name}")
+        except Exception as e:
+            log.error(f"Error in {step_name}: {e}")
+            sys.exit(1)
 
     log.info("Preprocessing complete.")
 
