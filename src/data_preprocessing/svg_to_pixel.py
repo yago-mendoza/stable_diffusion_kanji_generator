@@ -9,12 +9,14 @@ from src.utils.logger import get_logger
 log = get_logger()
 
 class SvgToPixelConverter:
-    def __init__(self, input_file, output_file, image_output_dir, svg_output_dir, limit=10):
+    def __init__(self, input_file, output_file, image_output_dir, svg_output_dir, limit=10, width=128, height=128):
         self.input_file = input_file
         self.output_file = output_file
         self.image_output_dir = Path(image_output_dir)
         self.svg_output_dir = Path(svg_output_dir)
         self.limit = limit
+        self.width = width
+        self.height = height
 
     @staticmethod
     def parse_xml(xml_file):
@@ -30,6 +32,7 @@ class SvgToPixelConverter:
             png_data = cairosvg.svg2png(bytestring=svg_content.encode('utf-8'))
             img = Image.open(io.BytesIO(png_data))
             img_path = self.image_output_dir / f"{literal}.png"
+            img_path.parent.mkdir(parents=True, exist_ok=True)
             img.save(img_path)
             log.info(f"Successfully processed kanji {literal} and saved to {img_path}")
             return img_path
@@ -52,7 +55,7 @@ class SvgToPixelConverter:
             path.set('fill', 'none')
 
         svg_content = f'''
-        <svg xmlns="http://www.w3.org/2000/svg" width="109" height="109" viewBox="0 0 109 109">
+        <svg xmlns="http://www.w3.org/2000/svg" width="{self.width}" height="{self.height}" viewBox="0 0 109 109">
             <rect width="109" height="109" fill="white"/>
             {ET.tostring(g_element, encoding="unicode")}
         </svg>

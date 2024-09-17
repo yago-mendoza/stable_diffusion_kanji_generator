@@ -27,9 +27,11 @@ steps:
     params:
       input_file: data/raw/kanjivg/kanjivg.xml
       output_file: data/processed/definitions/kanjivg_processed.json
-      image_output_dir: data/processed/images
-      svg_output_dir: data/processed/svg
+      image_output_dir: data/processed/images128
+      svg_output_dir: data/processed/svg128
       limit: null # int/null
+      width: 128
+      height: 128
     execute: false
     stop: false
 
@@ -38,8 +40,8 @@ steps:
     class: DatasetBuilder
     params:
       definitions_file: data/processed/definitions/kanjidic_processed.json
-      images_dir: data/processed/images
-      output_file: data/dataset/dataset.json
+      images_dir: data/processed/images128
+      output_file: data/dataset/dataset128.json
     execute: true
     stop: false
 
