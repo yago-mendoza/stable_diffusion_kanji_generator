@@ -108,6 +108,9 @@ You have the liberty to create Markdown files to document or communicate anythin
 Also, in a sparate markdown, feel free to add any advice or recommendation, be it about the current project or anything else that can be improved for being more clean and professional on the project. Document everything.
 Do not feel limited by output length, quantity and quality.
 The idea is that /scripts folder contains all the logic to run the project, and everything should be as modular as possible inside src folder.
+Add tests if needed.
+Atomical. Documented. Readable. Clean. Beautiful. Elegant.
+Code using beautful and elegnat patterns whenver possible.
 </action_prompt>
 </task_at_hand>
 </project_description>
