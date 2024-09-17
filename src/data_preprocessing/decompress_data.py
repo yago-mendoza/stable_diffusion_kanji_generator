@@ -1,28 +1,30 @@
 import gzip
 from pathlib import Path
-from src.utils.logger import log
+from src.utils.logger import get_logger
 
-def decompress_file(compressed_path, decompressed_path):
-    try:
-        with gzip.open(compressed_path, 'rb') as f_in:
-            with open(decompressed_path, 'wb') as f_out:
-                f_out.write(f_in.read())
-        log.info(f"Decompressed {compressed_path} to {decompressed_path}")
-    except Exception as e:
-        log.error(f"Failed to decompress {compressed_path}: {e}")
+log = get_logger()
 
-def main():
-    data_dir = Path('data/raw')
-    
-    # Decompress KANJIDIC2
-    kanjidic_compressed = data_dir / 'kanjidic2' / 'kanjidic2.xml.gz'
-    kanjidic_decompressed = data_dir / 'kanjidic2' / 'kanjidic2.xml'
-    decompress_file(kanjidic_compressed, kanjidic_decompressed)
-    
-    # Decompress KanjiVG
-    kanjivg_compressed = data_dir / 'kanjivg' / 'kanjivg-20220427.xml.gz'
-    kanjivg_decompressed = data_dir / 'kanjivg' / 'kanjivg.xml'
-    decompress_file(kanjivg_compressed, kanjivg_decompressed)
+class DataDecompressor:
+    def __init__(self, input_files, output_files):
+        self.input_files = [Path(f) for f in input_files]
+        self.output_files = [Path(f) for f in output_files]
+
+    def decompress_file(self, compressed_path, decompressed_path):
+        try:
+            with gzip.open(compressed_path, 'rb') as f_in:
+                with open(decompressed_path, 'wb') as f_out:
+                    f_out.write(f_in.read())
+            log.info(f"Decompressed {compressed_path} to {decompressed_path}")
+        except Exception as e:
+            log.error(f"Failed to decompress {compressed_path}: {e}")
+
+    def process(self):
+        for input_file, output_file in zip(self.input_files, self.output_files):
+            self.decompress_file(input_file, output_file)
 
 if __name__ == "__main__":
-    main()
+    decompressor = DataDecompressor(
+        input_files=["data/raw/kanjidic2/kanjidic2.xml.gz", "data/raw/kanjivg/kanjivg-20220427.xml.gz"],
+        output_files=["data/processed/kanjidic2/kanjidic2.xml", "data/processed/kanjivg/kanjivg.xml"]
+    )
+    decompressor.process()

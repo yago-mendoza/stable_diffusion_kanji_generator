@@ -1,19 +1,28 @@
 import logging
 import logging.config
-import os
 import yaml
+import inspect
+import os
 
 def setup_logging(config_path='src/utils/logger_config.yaml'):
     with open(config_path, 'r') as file:
         config = yaml.safe_load(file)
-        logging.config.dictConfig(config)
+    logging.config.dictConfig(config)
 
-def get_logger(name=None):
-    log_level = os.environ.get('LOG_LEVEL', 'DEBUG').upper()
-    logger = logging.getLogger(name)
-    logger.setLevel(log_level)
-    return logger
+def get_logger():
+    # Get the name of the file that's calling this function
+    caller_frame = inspect.stack()[1]
+    caller_filename = os.path.basename(caller_frame.filename)
+    logger_name = os.path.splitext(caller_filename)[0]  # Remove file extension
 
-# Set up logging when the module is imported
+    if config['log_settings']['enable_logs']:
+        return logging.getLogger(logger_name)
+    else:
+        return logging.getLogger('null')
+
+# Load configuration once when the module is imported
+with open('src/utils/logger_config.yaml', 'r') as file:
+    config = yaml.safe_load(file)
+
+# Set up logging
 setup_logging()
-log = get_logger('Data preprocessing')

@@ -1,0 +1,45 @@
+steps:
+  - name: Decompressing data
+    module: src.data_preprocessing.decompress_data
+    class: DataDecompressor
+    params:
+      input_files:
+        - data/raw/kanjidic2/kanjidic2.xml.gz
+        - data/raw/kanjivg/kanjivg-20220427.xml.gz
+      output_files:
+        - data/raw/kanjidic2/kanjidic2.xml
+        - data/raw/kanjivg/kanjivg.xml
+    execute: false
+    stop: false
+
+  - name: Parsing KANJIDIC2 data
+    module: src.data_preprocessing.kanjidic_parser
+    class: KanjidicParser
+    params:
+      input_file: data/raw/kanjidic2/kanjidic2.xml
+      output_file: data/processed/definitions/kanjidic_processed.json
+    execute: false
+    stop: false
+
+  - name: Converting SVG to pixel images
+    module: src.data_preprocessing.svg_to_pixel
+    class: SvgToPixelConverter
+    params:
+      input_file: data/raw/kanjivg/kanjivg.xml
+      output_file: data/processed/definitions/kanjivg_processed.json
+      image_output_dir: data/processed/images
+      svg_output_dir: data/processed/svg
+      limit: null # int/null
+    execute: false
+    stop: false
+
+  - name: Building the dataset
+    module: src.data_preprocessing.dataset_builder
+    class: DatasetBuilder
+    params:
+      definitions_file: data/processed/definitions/kanjidic_processed.json
+      images_dir: data/processed/images
+      output_file: data/dataset/dataset.json
+    execute: true
+    stop: false
+

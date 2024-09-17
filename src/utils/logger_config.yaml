@@ -3,6 +3,7 @@ disable_existing_loggers: False
 formatters:
   simple:
     format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    datefmt: '%H:%M:%S'
 handlers:
   console:
     class: logging.StreamHandler
@@ -14,10 +15,12 @@ handlers:
     formatter: simple
     level: DEBUG
 loggers:
-  my_logger:
+  '':  # Root logger
     handlers: [console, file]
     level: DEBUG
     propagate: False
-root:
-  handlers: [console, file]
-  level: DEBUG
+  PIL.PngImagePlugin:  # Add this section to control PIL logs
+    level: ERROR  # This will suppress DEBUG, INFO, and WARNING messages
+
+log_settings:
+  enable_logs: True

@@ -1,36 +1,53 @@
 import xml.etree.ElementTree as ET
 import json
-import os
-from src.utils.logger import log
+from src.utils.logger import get_logger
 
-def extract_kanji_data(root: ET.Element) -> dict:
-    # Extracts <literal> and <meaning> elements from the XML file
-    kanji_data = {}
-    for char in root.findall('.//character'):
-        literal = char.find('literal').text
-        meanings = [meaning.text for meaning in char.findall('.//meaning')]
-        kanji_data[literal] = {'meanings': meanings}
-    return kanji_data
+log = get_logger()
 
-def parse_kanjidic_xml(xml_file: str, output_file: str) -> None:
-    try:
-        tree = ET.parse(xml_file) # hierarchical structure of XML for easy access and edits
-        root = tree.getroot() # top-level element in the XML file
-        
-        kanji_data = extract_kanji_data(root)
+class KanjidicParser:
+    def __init__(self, input_file, output_file):
+        self.input_file = input_file
+        self.output_file = output_file
 
-        with open(output_file, 'w', encoding='utf-8') as f:
+    def process(self):
+        try:
+            tree = self.parse_xml()
+            kanji_data = self.extract_kanji_data(tree)
+            self.save_kanji_data(kanji_data)
+            log.info(f"KANJIDIC2 data parsed and saved to {self.output_file}")
+        except Exception as e:
+            log.error(f"Error parsing KANJIDIC2 data: {e}")
+            raise
+
+    def parse_xml(self):
+        try:
+            tree = ET.parse(self.input_file)
+            return tree.getroot()
+        except ET.ParseError as e:
+            log.error(f"Error parsing XML file: {e}")
+            raise
+
+    def extract_kanji_data(self, root):
+        kanji_data = {}
+        for character in root.findall('.//character'):
+            kanji = character.find('literal').text
+            kanji_data[kanji] = {
+                "meanings": self.extract_meanings(character),
+                "on_readings": self.extract_readings(character, 'ja_on'),
+                "kun_readings": self.extract_readings(character, 'ja_kun')
+            }
+        return kanji_data
+
+    def extract_meanings(self, character):
+        return [m.text for m in character.findall('.//meaning')]
+
+    def extract_readings(self, character, reading_type):
+        return [r.text for r in character.findall(f".//reading[@r_type='{reading_type}']")]
+
+    def save_kanji_data(self, kanji_data):
+        with open(self.output_file, 'w', encoding='utf-8') as f:
             json.dump(kanji_data, f, ensure_ascii=False, indent=2)
 
-        log.info(f"Successfully parsed KANJIDIC2 data from {xml_file} to {output_file}")
-    except Exception as e:
-        log.error(f"Failed to parse KANJIDIC2 data: {e}")
-
-def main():
-    input_file = 'data/raw/kanjidic2/kanjidic2.xml'
-    output_file = 'data/processed/definitions/kanjidic_processed.json'
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
-    parse_kanjidic_xml(input_file, output_file)
-
 if __name__ == "__main__":
-    main()
+    parser = KanjidicParser("data/processed/kanjidic2/kanjidic2.xml", "data/processed/kanjidic2/kanjidic2.json")
+    parser.process()
