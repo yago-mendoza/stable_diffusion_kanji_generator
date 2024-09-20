@@ -1,4 +1,6 @@
 __pycache__/
+src/model/cache/
+.cursorrules
 *.py[cod]
 .venv/
 .env

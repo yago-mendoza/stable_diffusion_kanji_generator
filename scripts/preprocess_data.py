@@ -1,11 +1,11 @@
 import yaml
 from pathlib import Path
-from yaml_step_executor import YamlStepExecutor
+from configs.yaml_step_executor import YamlStepExecutor
 from src.utils.logger import get_logger
 
 log = get_logger()
 
-config_path = 'scripts/preprocess_config.yaml'
+config_path = 'configs/preprocess_config.yaml'
 with open(config_path, 'r') as config_file:
     config = yaml.safe_load(config_file)
 
